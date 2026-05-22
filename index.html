@@ -1,218 +1,1150 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgroBusca - Enciclopédia Agrícola</title>
-    <style>
-        /* Estilização CSS - Estilo Google Clean */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgroBase — Busca Agrícola</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #2d5a27;
+    --verde-medio: #4a8c3f;
+    --verde-claro: #7dbf6e;
+    --creme: #f7f3ec;
+    --terra: #8b5e3c;
+    --texto: #1a1a1a;
+    --texto-sec: #555;
+    --borda: #d8e8d4;
+    --card-bg: #ffffff;
+    --sombra: 0 4px 24px rgba(45,90,39,0.10);
+  }
 
-        body {
-            background-color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .search-container {
-            text-align: center;
-            margin-top: 15vh;
-            width: 100%;
-            max-width: 600px;
-            transition: margin-top 0.3s ease;
-        }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--creme);
+    color: var(--texto);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-        .search-container.searched {
-            margin-top: 2vh;
-        }
+  /* Background decorativo */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -120px; right: -120px;
+    width: 480px; height: 480px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(125,191,110,0.18) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -100px; left: -100px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(45,90,39,0.10) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-        h1 {
-            font-size: 3.5rem;
-            color: #2e7d32; /* Verde Agrícola */
-            margin-bottom: 30px;
-            font-weight: 600;
-        }
+  /* ── TELA INICIAL ── */
+  #home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    position: relative;
+    z-index: 1;
+    transition: all 0.4s ease;
+  }
 
-        h1 span {
-            color: #fbc02d; /* Amarelo Sol/Colheita */
-        }
+  .logo-area {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeDown 0.7s ease both;
+  }
 
-        .search-box-wrapper {
-            position: relative;
-            width: 100%;
-        }
+  .logo-leaf {
+    font-size: 3.5rem;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    display: block;
+    filter: drop-shadow(0 2px 8px rgba(45,90,39,0.3));
+  }
 
-        .search-box {
-            width: 100%;
-            padding: 15px 20px;
-            font-size: 16px;
-            border: 1px solid #dfe1e5;
-            border-radius: 24px;
-            outline: none;
-            box-shadow: none;
-            transition: box-shadow 0.2s;
-        }
+  .logo-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--verde);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
 
-        .search-box:hover, .search-box:focus {
-            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
-            border-color: transparent;
-        }
+  .logo-title span {
+    color: var(--verde-claro);
+  }
 
-        .results-container {
-            width: 100%;
-            max-width: 650px;
-            margin-top: 30px;
-        }
+  .logo-sub {
+    font-size: 0.95rem;
+    color: var(--texto-sec);
+    margin-top: 0.5rem;
+    font-weight: 300;
+    letter-spacing: 0.03em;
+  }
 
-        .card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #e0e0e0;
-            text-align: left;
-            animation: fadeIn 0.3s ease;
-        }
+  /* ── BARRA DE BUSCA ── */
+  .search-wrap {
+    width: 100%;
+    max-width: 620px;
+    position: relative;
+    animation: fadeUp 0.7s 0.15s ease both;
+  }
 
-        .card h3 {
-            color: #1a0dab;
-            font-size: 19px;
-            margin-bottom: 5px;
-            cursor: pointer;
-        }
+  .search-box {
+    width: 100%;
+    padding: 1rem 3.5rem 1rem 1.4rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 400;
+    border: 2px solid var(--borda);
+    border-radius: 50px;
+    background: #fff;
+    outline: none;
+    color: var(--texto);
+    box-shadow: var(--sombra);
+    transition: border 0.2s, box-shadow 0.2s;
+  }
 
-        .card h3:hover {
-            text-decoration: underline;
-        }
+  .search-box:focus {
+    border-color: var(--verde-claro);
+    box-shadow: 0 4px 32px rgba(74,140,63,0.18);
+  }
 
-        .card .category {
-            color: #006621;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
+  .search-box::placeholder { color: #aaa; }
 
-        .card p {
-            color: #4d5156;
-            font-size: 14px;
-            line-height: 1.5;
-        }
+  .search-btn {
+    position: absolute;
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--verde);
+    border: none;
+    border-radius: 50%;
+    width: 40px; height: 40px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, transform 0.15s;
+  }
 
-        .no-results {
-            color: #70757a;
-            margin-top: 20px;
-            font-size: 15px;
-        }
+  .search-btn:hover { background: var(--verde-medio); transform: translateY(-50%) scale(1.07); }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+  .search-btn svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+
+  /* Sugestões rápidas */
+  .quick-tags {
+    margin-top: 1.2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    animation: fadeUp 0.7s 0.3s ease both;
+  }
+
+  .tag {
+    background: #fff;
+    border: 1.5px solid var(--borda);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.82rem;
+    color: var(--verde-medio);
+    cursor: pointer;
+    transition: all 0.18s;
+    font-weight: 500;
+  }
+
+  .tag:hover {
+    background: var(--verde);
+    color: #fff;
+    border-color: var(--verde);
+  }
+
+  /* ── AUTOCOMPLETE ── */
+  #autocomplete {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0; right: 0;
+    background: #fff;
+    border: 1.5px solid var(--borda);
+    border-radius: 16px;
+    box-shadow: var(--sombra);
+    overflow: hidden;
+    z-index: 100;
+    display: none;
+  }
+
+  .auto-item {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.15s;
+  }
+
+  .auto-item:hover, .auto-item.active { background: var(--creme); }
+  .auto-icon { font-size: 1rem; }
+
+  /* ── TELA DE RESULTADOS ── */
+  #results-page {
+    display: none;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .results-header {
+    background: var(--verde);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .header-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .header-logo span { color: var(--verde-claro); }
+
+  .search-wrap-sm {
+    flex: 1;
+    max-width: 560px;
+    position: relative;
+  }
+
+  .search-box-sm {
+    width: 100%;
+    padding: 0.65rem 3rem 0.65rem 1.2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 40px;
+    background: rgba(255,255,255,0.12);
+    outline: none;
+    color: #fff;
+    transition: border 0.2s;
+  }
+
+  .search-box-sm:focus { border-color: var(--verde-claro); background: rgba(255,255,255,0.18); }
+  .search-box-sm::placeholder { color: rgba(255,255,255,0.5); }
+
+  .search-btn-sm {
+    position: absolute;
+    right: 8px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--verde-claro);
+    border: none; border-radius: 50%;
+    width: 32px; height: 32px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .search-btn-sm:hover { background: #8fd17d; }
+  .search-btn-sm svg { width: 15px; height: 15px; stroke: var(--verde); fill: none; stroke-width: 2.5; stroke-linecap: round; }
+
+  /* Conteúdo de resultados */
+  .results-body {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .results-meta {
+    font-size: 0.82rem;
+    color: var(--texto-sec);
+    margin-bottom: 1.5rem;
+  }
+
+  .results-meta strong { color: var(--verde); }
+
+  /* Card de resultado */
+  .result-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--borda);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+    animation: slideIn 0.35s ease both;
+    cursor: pointer;
+  }
+
+  .result-card:hover {
+    box-shadow: 0 8px 32px rgba(45,90,39,0.13);
+    transform: translateY(-2px);
+  }
+
+  .card-category {
+    display: inline-block;
+    background: rgba(74,140,63,0.10);
+    color: var(--verde-medio);
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 0.6rem;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--verde);
+    margin-bottom: 0.5rem;
+  }
+
+  .card-body {
+    font-size: 0.92rem;
+    color: var(--texto-sec);
+    line-height: 1.7;
+  }
+
+  .card-body p { margin-bottom: 0.4rem; }
+  .card-body strong { color: var(--texto); font-weight: 500; }
+
+  .card-tags {
+    margin-top: 0.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .card-tag {
+    background: var(--creme);
+    border: 1px solid var(--borda);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    color: var(--texto-sec);
+  }
+
+  /* Nenhum resultado */
+  .no-result {
+    text-align: center;
+    padding: 3rem 1rem;
+    animation: fadeUp 0.5s ease;
+  }
+
+  .no-result .emoji { font-size: 3rem; margin-bottom: 1rem; }
+  .no-result h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--verde); margin-bottom: 0.5rem; }
+  .no-result p { color: var(--texto-sec); font-size: 0.92rem; }
+
+  /* Detalhes do card */
+  #detail-page {
+    display: none;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .detail-body {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--verde-medio);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 1.5rem;
+    transition: color 0.18s;
+  }
+
+  .back-btn:hover { color: var(--verde); }
+  .back-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+
+  .detail-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--borda);
+    border-radius: 20px;
+    padding: 2rem 2.2rem;
+    box-shadow: var(--sombra);
+  }
+
+  .detail-category {
+    display: inline-block;
+    background: rgba(74,140,63,0.10);
+    color: var(--verde-medio);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 0.8rem;
+  }
+
+  .detail-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--verde);
+    margin-bottom: 1.2rem;
+    line-height: 1.2;
+  }
+
+  .detail-section { margin-bottom: 1.4rem; }
+  .detail-section h4 {
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--verde-medio);
+    margin-bottom: 0.5rem;
+  }
+
+  .detail-section p, .detail-section li {
+    font-size: 0.95rem;
+    color: var(--texto-sec);
+    line-height: 1.75;
+  }
+
+  .detail-section ul { padding-left: 1.3rem; }
+  .detail-section li { margin-bottom: 0.3rem; }
+
+  .detail-tags {
+    margin-top: 1.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--borda);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .detail-tag {
+    background: var(--creme);
+    border: 1px solid var(--borda);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    color: var(--texto-sec);
+  }
+
+  /* Animações */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsivo */
+  @media (max-width: 600px) {
+    .logo-title { font-size: 2.2rem; }
+    .results-header { gap: 1rem; }
+    .header-logo { font-size: 1.2rem; }
+    .detail-title { font-size: 1.5rem; }
+    .detail-card { padding: 1.4rem; }
+  }
+</style>
 </head>
 <body>
 
-    <!-- Estrutura HTML -->
-    <div class="search-container" id="searchContainer">
-        <h1>Agro<span>Busca</span></h1>
-        <div class="search-box-wrapper">
-            <input type="text" id="searchInput" class="search-box" placeholder="Pesquise sobre culturas, pragas, solo ou manejo..." autocomplete="off">
-        </div>
+<!-- ═══════════════ TELA INICIAL ═══════════════ -->
+<div id="home">
+  <div class="logo-area">
+    <span class="logo-leaf">🌿</span>
+    <div class="logo-title">Agro<span>Base</span></div>
+    <div class="logo-sub">Enciclopédia agrícola brasileira</div>
+  </div>
+
+  <div class="search-wrap">
+    <input
+      type="text"
+      id="main-input"
+      class="search-box"
+      placeholder="Pesquise uma cultura, praga, técnica..."
+      autocomplete="off"
+      oninput="onInput(this.value, 'main')"
+      onkeydown="onKey(event, 'main')"
+    />
+    <button class="search-btn" onclick="doSearch(document.getElementById('main-input').value)" aria-label="Buscar">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </button>
+    <div id="autocomplete" role="listbox"></div>
+  </div>
+
+  <div class="quick-tags" id="tags">
+    <!-- preenchidas pelo JS -->
+  </div>
+</div>
+
+<!-- ═══════════════ RESULTADOS ═══════════════ -->
+<div id="results-page">
+  <div class="results-header">
+    <div class="header-logo" onclick="goHome()">Agro<span>Base</span></div>
+    <div class="search-wrap-sm">
+      <input
+        type="text"
+        id="results-input"
+        class="search-box-sm"
+        placeholder="Nova pesquisa..."
+        autocomplete="off"
+        oninput="onInput(this.value, 'results')"
+        onkeydown="onKey(event, 'results')"
+      />
+      <button class="search-btn-sm" onclick="doSearch(document.getElementById('results-input').value)" aria-label="Buscar">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
     </div>
+  </div>
+  <div class="results-body">
+    <div class="results-meta" id="results-meta"></div>
+    <div id="results-list"></div>
+  </div>
+</div>
 
-    <div class="results-container" id="resultsContainer"></div>
+<!-- ═══════════════ DETALHE ═══════════════ -->
+<div id="detail-page">
+  <div class="results-header">
+    <div class="header-logo" onclick="goHome()">Agro<span>Base</span></div>
+    <div class="search-wrap-sm">
+      <input
+        type="text"
+        id="detail-input"
+        class="search-box-sm"
+        placeholder="Nova pesquisa..."
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter') doSearch(this.value)"
+      />
+      <button class="search-btn-sm" onclick="doSearch(document.getElementById('detail-input').value)" aria-label="Buscar">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="detail-body">
+    <button class="back-btn" onclick="goBack()" aria-label="Voltar">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      Voltar aos resultados
+    </button>
+    <div id="detail-content"></div>
+  </div>
+</div>
 
-    <!-- Lógica de Banco de Dados e Busca (JavaScript) -->
-    <script>
-        // Banco de Dados embutido no código (Sinta-se livre para expandir esta lista)
-        const bancoDadosAgro = [
-            {
-                titulo: "Cultivo do Milho (Zea mays)",
-                categoria: "Culturas / Grãos",
-                conteudo: "O milho necessita de solo bem drenado e rico em matéria orgânica. O espaçamento ideal varia de 45 a 90 cm entre linhas. Exige alta demanda de nitrogênio e água durante o florescimento.",
-                palavrasChave: ["milho", "graos", "plantio", "adubacao", "irrigacao"]
-            },
-            {
-                titulo: "Manejo de Pragas: Lagarta-do-cartucho",
-                categoria: "Proteção de Cultivos / Pragas",
-                conteudo: "A Spodoptera frugiperda ataca principalmente o milho. O controle pode ser feito via manejo integrado (MIP), uso de plantas Bt, ou aplicação de controle biológico com a vespinha Trichogramma.",
-                palavrasChave: ["lagarta", "cartucho", "praga", "inseto", "milho", "defensivo"]
-            },
-            {
-                titulo: "Correção de Solo: Calagem",
-                categoria: "Solo / Nutrição",
-                conteudo: "A calagem consiste na aplicação de calcário para elevar o pH do solo e diminuir a toxicidade do alumínio. Melhora a eficiência dos fertilizantes e fornece Cálcio e Magnésio.",
-                palavrasChave: ["calcario", "calagem", "ph", "solo", "acidez", "terra"]
-            },
-            {
-                titulo: "Cultivo da Soja (Glycine max)",
-                categoria: "Culturas / Oleaginosas",
-                conteudo: "A soja se desenvolve melhor em temperaturas entre 20°C e 30°C. É fundamental realizar a inoculação das sementes com bactérias Bradyrhizobium para fixação biológica de nitrogênio.",
-                palavrasChave: ["soja", "inoculacao", "bacteria", "graos", "plantio"]
-            },
-            {
-                titulo: "Irrigação por Gotejamento",
-                categoria: "Tecnologia / Engenharia",
-                conteudo: "Sistema de alta eficiência hidráulica que aplica água diretamente na zona radicular das plantas. Reduz o desperdício de água e o aparecimento de plantas daninhas nas entrelinhas.",
-                palavrasChave: ["irrigacao", "agua", "gotejamento", "tecnologia", "economia"]
-            }
-        ];
+<script>
+// ════════════════════════════════════════════
+//  BANCO DE DADOS AGRÍCOLA
+// ════════════════════════════════════════════
+const DB = [
+  {
+    id: 1,
+    categoria: "Cultura",
+    titulo: "Soja (Glycine max)",
+    resumo: "Principal grão de exportação do Brasil, cultivado em larga escala no Centro-Oeste.",
+    descricao: "A soja é a principal oleaginosa cultivada no Brasil e um dos pilares do agronegócio nacional. O país é o maior produtor mundial, com destaque para os estados do Mato Grosso, Paraná e Rio Grande do Sul.",
+    detalhes: {
+      "Clima ideal": "Tropical e subtropical, temperaturas entre 20–30 °C.",
+      "Solo": "Latossolo de textura média a argilosa, pH 6.0–6.5.",
+      "Espaçamento": "45–50 cm entre linhas, 10–15 plantas/m.",
+      "Ciclo": "90 a 135 dias dependendo da cultivar.",
+      "Produtividade média": "3.500 kg/ha (safra 2023/24).",
+    },
+    lista: ["Inoculação com Bradyrhizobium é fundamental para fixação de N₂", "Rotacionar com milho ou sorgo reduz doenças de solo", "Monitorar ferrugem asiática (Phakopsora pachyrhizi) semanalmente"],
+    tags: ["oleaginosa","exportação","cerrado","transgênica","fixação de nitrogênio"],
+    palavras: ["soja","glycine","grão","oleaginosa","cerrado","plantio","cultivar"]
+  },
+  {
+    id: 2,
+    categoria: "Cultura",
+    titulo: "Milho (Zea mays)",
+    resumo: "Cereal versátil usado em alimentação humana, animal e industrial.",
+    descricao: "O milho é a segunda maior cultura do Brasil em área plantada. Pode ser cultivado em duas safras anuais — a safra de verão e a safrinha (segunda safra), plantada após a soja no Centro-Oeste.",
+    detalhes: {
+      "Clima ideal": "Temperaturas entre 18–30 °C, precipitação 500–800 mm no ciclo.",
+      "Solo": "Fértil, bem drenado, pH 5.8–7.0.",
+      "Espaçamento": "70–80 cm entre linhas, 3–4 plantas/m.",
+      "Ciclo": "110 a 160 dias (verão); 90–120 dias (safrinha).",
+      "Produtividade média": "6.000 kg/ha (milho verão).",
+    },
+    lista: ["Adubação de cobertura com N é essencial no estágio V4–V6", "Controle de cigarrinha-do-milho (Dalbulus maidis) vetora do milho lethal necrosis", "Silagem deve ser feita com 30–35% de MS"],
+    tags: ["cereal","ração","silagem","safrinha","etanol"],
+    palavras: ["milho","zea mays","cereal","grão","safrinha","palha","silagem","forrageira"]
+  },
+  {
+    id: 3,
+    categoria: "Cultura",
+    titulo: "Cana-de-açúcar (Saccharum officinarum)",
+    resumo: "Base da produção de açúcar e etanol, com Brasil como líder mundial.",
+    descricao: "A cana-de-açúcar é cultivada principalmente em São Paulo, Goiás e Minas Gerais. O Brasil domina a produção mundial de açúcar e é o maior exportador de etanol de cana.",
+    detalhes: {
+      "Clima ideal": "Tropical, temperaturas 25–35 °C, pluviosidade 1.200–1.500 mm/ano.",
+      "Solo": "Latossolos e Argissolos, profundos e bem drenados.",
+      "Ciclo": "12 meses (cana-planta), 5–6 cortes por reforma.",
+      "Produtividade média": "80–90 ton/ha.",
+      "ATR médio": "132 kg de açúcar total recuperável por tonelada.",
+    },
+    lista: ["Colheita mecanizada reduz queimadas e preserva palhada", "Vinhaça e torta de filtro são biofertilizantes valiosos", "Controle biológico da broca-da-cana com Cotesia flavipes"],
+    tags: ["açúcar","etanol","biocombustível","canavial","usina"],
+    palavras: ["cana","açúcar","etanol","biocombustível","saccharum","usina","broca","canavial"]
+  },
+  {
+    id: 4,
+    categoria: "Cultura",
+    titulo: "Café (Coffea arabica / Coffea canephora)",
+    resumo: "Um dos produtos mais icônicos da agricultura brasileira e de maior valor de exportação.",
+    descricao: "O Brasil é o maior produtor e exportador mundial de café. O café arábica domina o sul de Minas, Cerrado Mineiro e Mogiana. O robusta/conilon prevalece no Espírito Santo e Rondônia.",
+    detalhes: {
+      "Clima ideal": "Arábica: 18–23 °C, altitude 600–2.000 m. Conilon: 22–26 °C, baixas altitudes.",
+      "Solo": "Latossolo Vermelho-Amarelo, pH 5.5–6.5, boa drenagem.",
+      "Espaçamento": "2,5 x 0,5 m a 4 x 1 m (adensado).",
+      "Ciclo produtivo": "3–4 anos até produção plena; vida útil 20–30 anos.",
+      "Produtividade média": "30–40 sacas/ha (sequeiro).",
+    },
+    lista: ["Biênio produtivo: ano de carga seguido de descanso — manejar adubação adequadamente", "Ferrugem do cafeeiro (Hemileia vastatrix) é principal doença foliar", "Processamento via via úmida (cereja descascado) eleva qualidade de xícara"],
+    tags: ["arábica","conilon","robusta","exportação","specialty coffee"],
+    palavras: ["café","coffea","arábica","conilon","robusta","ferrugem","cafeeiro","grão","torração"]
+  },
+  {
+    id: 5,
+    categoria: "Cultura",
+    titulo: "Arroz (Oryza sativa)",
+    resumo: "Alimento básico para a população brasileira, cultivado em várzeas e terras altas.",
+    descricao: "O arroz é cultivado de duas formas principais no Brasil: o arroz irrigado (várzea), predominante no Rio Grande do Sul e Santa Catarina, e o arroz de terras altas (sequeiro), no Centro-Oeste.",
+    detalhes: {
+      "Clima ideal": "22–32 °C na fase vegetativa; 20–25 °C na granação.",
+      "Solo (irrigado)": "Solos hidromórficos, planícies de inundação.",
+      "Solo (sequeiro)": "Latossolo, pH 5.5–6.5.",
+      "Ciclo": "90–130 dias.",
+      "Produtividade média": "7.000–8.000 kg/ha (irrigado); 2.500–3.500 kg/ha (sequeiro).",
+    },
+    lista: ["Brusone (Pyricularia oryzae) é a principal doença do arroz", "Manejo da água no arroz irrigado: mínimo 5 cm lâmina durante florescimento", "Adubação com Si melhora resistência a pragas e doenças"],
+    tags: ["cereal","várzea","sequeiro","brusone","alimentação"],
+    palavras: ["arroz","oryza","várzea","irrigado","sequeiro","grão","brusone","alimento"]
+  },
+  {
+    id: 6,
+    categoria: "Cultura",
+    titulo: "Feijão (Phaseolus vulgaris)",
+    resumo: "Leguminosa essencial na dieta brasileira, cultivada em três safras anuais.",
+    descricao: "O feijão é cultivado em praticamente todo o Brasil em três épocas: 'das águas' (outubro–novembro), 'da seca' (janeiro–fevereiro) e 'de inverno irrigado' (abril–maio). Paraná, Minas Gerais e Goiás lideram a produção.",
+    detalhes: {
+      "Clima ideal": "18–30 °C, sensível a geadas e temperaturas acima de 35 °C na floração.",
+      "Solo": "Franco-argiloso a argiloso, pH 6.0–6.8.",
+      "Espaçamento": "45–50 cm entre linhas, 12–15 plantas/m.",
+      "Ciclo": "65–90 dias.",
+      "Produtividade média": "1.500–2.200 kg/ha.",
+    },
+    lista: ["Inoculação com Rhizobium tropici reduz custo de adubação nitrogenada", "Crestamento bacteriano comum (Xanthomonas axonopodis): evitar sementes infectadas", "Rotação com culturas não leguminosas quebra ciclo de patógenos de solo"],
+    tags: ["leguminosa","dieta","proteína","safras","pequeno produtor"],
+    palavras: ["feijão","phaseolus","leguminosa","carioca","preto","safra","irrigado","grão"]
+  },
+  {
+    id: 7,
+    categoria: "Cultura",
+    titulo: "Mandioca (Manihot esculenta)",
+    resumo: "Cultura de importância social e industrial, com grande tolerância à seca.",
+    descricao: "A mandioca é cultivada em todo o Brasil e tem enorme importância para a agricultura familiar. Suas raízes são fonte de amido para indústria alimentícia e produção de farinha.",
+    detalhes: {
+      "Clima ideal": "20–27 °C, tolerante a períodos de seca.",
+      "Solo": "Adapta-se a solos pobres, mas prefere solos arenosos a franco-argilosos.",
+      "Espaçamento": "1 x 1 m a 1 x 0,6 m.",
+      "Ciclo": "8–24 meses dependendo do uso (mesa vs. indústria).",
+      "Produtividade média": "20–25 ton/ha (convencional).",
+    },
+    lista: ["Usar manivas sadias e certificadas evita disseminação de viroses", "Bacteriose (Xanthomonas phaseoli var. manihotis) causa podridão-mole dos ramos", "Variedades amargas têm maior teor de HCN — processamento correto é obrigatório"],
+    tags: ["amido","farinha","agricultura familiar","resistência à seca","indústria"],
+    palavras: ["mandioca","manihot","aipim","macaxeira","farinha","amido","raiz","seca"]
+  },
+  {
+    id: 8,
+    categoria: "Praga",
+    titulo: "Ferrugem Asiática da Soja (Phakopsora pachyrhizi)",
+    resumo: "Principal doença fúngica da soja no Brasil, causando perdas de até 80% sem controle.",
+    descricao: "A ferrugem asiática é causada pelo fungo Phakopsora pachyrhizi e representa a maior ameaça fitossanitária à cultura da soja no Brasil. Foi introduzida em 2001 e rapidamente se disseminou por todas as regiões produtoras.",
+    detalhes: {
+      "Sintomas": "Lesões pardo-escuras com pústulas na face abaxial das folhas; desfolha precoce.",
+      "Condições favoráveis": "Temperatura 15–28 °C com período de molhamento foliar >6 horas.",
+      "Período crítico": "Do início do florescimento ao enchimento de grãos (R1–R5.5).",
+      "Perdas": "30–80% da produção sem controle adequado.",
+    },
+    lista: ["Monitorar semanalmente a partir de R1 — primeiro sinal é mancha angulosa", "Aplicação preventiva de fungicida (triazol + estrobilurina ou SDHI) no início do florescimento", "Usar cultivares com genes de resistência parcial quando disponíveis", "Consórcio AgroFit: respeitar janela de vazio sanitário da soja (60–90 dias)"],
+    tags: ["soja","fungo","ferrugem","doença foliar","fungicida"],
+    palavras: ["ferrugem","phakopsora","fungo","soja","doença","pústula","desfolha","fungicida"]
+  },
+  {
+    id: 9,
+    categoria: "Praga",
+    titulo: "Lagarta do Cartucho do Milho (Spodoptera frugiperda)",
+    resumo: "Principal praga inseto do milho no Brasil, com capacidade de defoliação severa.",
+    descricao: "A lagarta-do-cartucho é o principal inseto-praga do milho no Brasil. Sua larva penetra no cartucho das plantas jovens e se alimenta do interior, podendo destruir o ponto de crescimento em infestações severas.",
+    detalhes: {
+      "Identificação": "Lagarta com cabeça escura e listras laterais claras; 3 pares de pernas abdominais.",
+      "Dano econômico": "Plantas com >10% de folhas consumidas na fase vegetativa.",
+      "Ciclo de vida": "30–50 dias (ovo → adulto).",
+      "Inimigos naturais": "Chelonus insularis, Telenomus remus, vírus Baculovirus.",
+    },
+    lista: ["MIP: amostragem em 10 pontos/100 plantas; tratar se >20% plantas infestadas", "Milho Bt (Viptera/Herculex) reduz dano, mas resistência já documentada — refugio obrigatório", "Controle biológico com Baculovirus spodoptera: compatível com PI", "Inseticidas diamidas (clorantraniliprole, flubendiamida) são mais eficientes em lagartas jovens (L1-L2)"],
+    tags: ["milho","lagarta","spodoptera","praga","MIP","controle biológico"],
+    palavras: ["lagarta","cartucho","spodoptera","milho","praga","baculovirus","bt","inseticida"]
+  },
+  {
+    id: 10,
+    categoria: "Praga",
+    titulo: "Cigarrinha-Verde (Empoasca kraemeri)",
+    resumo: "Praga sugadora do feijão e soja que transmite vírus e causa hopperburn.",
+    descricao: "A cigarrinha-verde é um inseto hemíptero que suga a seiva das folhas e injeta toxinas, causando encurvamento das folhas (hopperburn). Além do dano direto, pode transmitir vírus em algumas culturas.",
+    detalhes: {
+      "Dano": "Clorose e encurvamento das bordas foliares; redução da fotossíntese.",
+      "Espécies afetadas": "Feijão, soja, batata, algodão.",
+      "Monitoramento": "Armadilha amarela adesiva ou batida de pano.",
+      "Nível de controle": ">2 ninfas/folíolo (feijão).",
+    },
+    lista: ["Inseticidas sistêmicos (imidacloprido no tratamento de semente) reduzem população inicial", "Preservar inimigos naturais (joaninhas, crisopídeos) no manejo integrado", "Variedades resistentes disponíveis para feijão — consultar IAC"],
+    tags: ["feijão","soja","sugador","hopperburn","MIP"],
+    palavras: ["cigarrinha","empoasca","sugador","feijão","hopperburn","verde","ninfas"]
+  },
+  {
+    id: 11,
+    categoria: "Técnica",
+    titulo: "Plantio Direto na Palha (PD)",
+    resumo: "Sistema de cultivo conservacionista que mantém a palha na superfície do solo.",
+    descricao: "O Plantio Direto é um sistema de manejo do solo que elimina o revolvimento e mantém a palha de culturas anteriores sobre a superfície. É amplamente adotado no Sul e Centro-Oeste do Brasil, sendo referência mundial em conservação de solo.",
+    detalhes: {
+      "Princípios": "Sem revolvimento do solo, cobertura permanente, rotação de culturas.",
+      "Benefícios": "Reduz erosão em 90%, melhora matéria orgânica, economiza combustível.",
+      "Palhada mínima": "6–8 ton/ha de MS para boa cobertura.",
+      "Tempo para consolidação": "3–5 anos para maturação do sistema.",
+    },
+    lista: ["Rotação soja/milho/braquiária/pousio forma a base do PD tropical (ILPF)", "Compactação subsuperficial pode exigir subsolagem antes de adotar PD", "Monitorar pH em camadas: solo sob PD acidifica em superfície — aplicar calcário em cobertura"],
+    tags: ["conservação de solo","rotação de culturas","palha","carbono","sustentabilidade"],
+    palavras: ["plantio direto","palha","conservação","solo","rotação","cobertura","revolvimento","carbono"]
+  },
+  {
+    id: 12,
+    categoria: "Técnica",
+    titulo: "Integração Lavoura-Pecuária-Floresta (ILPF)",
+    resumo: "Sistema integrado que combina produção agrícola, animal e florestal na mesma área.",
+    descricao: "A ILPF é uma estratégia sustentável que integra diferentes sistemas produtivos numa mesma propriedade, promovendo sinergia entre lavoura, pecuária e/ou floresta. Tem foco em sustentabilidade ambiental e econômica.",
+    detalhes: {
+      "Modalidades": "ILP, IPF, ILF, ILPF completo.",
+      "Vantagens": "Diversificação de renda, recuperação de pastagens, captura de carbono.",
+      "Área adotada no Brasil": "~17 milhões de hectares (estimativa 2023).",
+      "Incentivos": "Programa ABC+ financia adoção com juros reduzidos.",
+    },
+    lista: ["Eucalipto e pinus são espécies florestais mais comuns no componente arbóreo", "Braquiária ruziziensis é a forrageira mais utilizada no consórcio com soja/milho", "Necessário planejamento de longo prazo: floresta exige 6–10 anos para colheita"],
+    tags: ["sustentabilidade","integração","floresta","pastagem","ABC+"],
+    palavras: ["ilpf","integração","lavoura","pecuária","floresta","braquiária","eucalipto","sustentável"]
+  },
+  {
+    id: 13,
+    categoria: "Técnica",
+    titulo: "Adubação Verde e Cobertura do Solo",
+    resumo: "Uso de plantas para melhorar a fertilidade, estrutura e biologia do solo.",
+    descricao: "A adubação verde consiste no cultivo de plantas específicas — geralmente leguminosas ou gramíneas — para incorporar ao solo ou manter como cobertura, visando melhorar sua fertilidade, estrutura física e atividade biológica.",
+    detalhes: {
+      "Espécies leguminosas": "Crotalária, feijão-de-porco, mucuna, guandu.",
+      "Espécies gramíneas": "Braquiária, milho, sorgo, palhada de trigo.",
+      "Crotalária juncea": "Fixa 150–400 kg N/ha; suprime nematoides.",
+      "Incorporação vs. cobertura": "Incorporação acelera decomposição; cobertura protege solo mais.",
+    },
+    lista: ["Crotalária spectabilis reduz população de Meloidogyne incognita em até 90%", "Época de semeadura importa: semear 40–60 dias antes da colheita da cultura principal", "Mistura de espécies (coquetel de sementes) maximiza benefícios complementares"],
+    tags: ["fertilidade","leguminosa","nematoides","crotalária","solo"],
+    palavras: ["adubação verde","cobertura","crotalária","mucuna","guandu","nematoides","leguminosa","verde"]
+  },
+  {
+    id: 14,
+    categoria: "Solo e Nutrição",
+    titulo: "Calagem e Correção do pH do Solo",
+    resumo: "Prática fundamental para elevar o pH e disponibilizar nutrientes para as culturas.",
+    descricao: "A calagem é a prática de aplicar calcário agrícola para elevar o pH de solos ácidos, neutralizar o alumínio tóxico e fornecer cálcio e magnésio às plantas. É a base de qualquer programa de fertilização.",
+    detalhes: {
+      "pH ideal": "6.0–6.5 para a maioria das culturas anuais; 5.5 para eucalipto.",
+      "PRNT mínimo": "Calcário com PRNT ≥ 70% para aplicação na superfície.",
+      "Método de cálculo": "Saturação por bases (V%): dose = (V2 - V1) × T / 10.",
+      "Época": "60–90 dias antes do plantio para reação completa.",
+    },
+    lista: ["Calcário calcítico (CaCO₃) corrige pH e fornece Ca; calcário dolomítico fornece Ca + Mg", "Solo com Al³⁺ > 0,5 cmolc/dm³ causa toxicidade radicular — calagem é prioritária", "Reaplicar a cada 3–4 anos ou quando V% cair abaixo de 50%"],
+    tags: ["calagem","calcário","pH","alumínio","fertilidade"],
+    palavras: ["calagem","calcário","pH","acidez","alumínio","corretivo","PRNT","saturação de bases","dolomítico"]
+  },
+  {
+    id: 15,
+    categoria: "Solo e Nutrição",
+    titulo: "Macro e Micronutrientes Essenciais",
+    resumo: "Guia dos 17 elementos essenciais ao crescimento e desenvolvimento das plantas.",
+    descricao: "As plantas necessitam de 17 elementos essenciais para completar seu ciclo de vida. São divididos em macronutrientes (exigidos em grandes quantidades) e micronutrientes (exigidos em pequenas quantidades, mas igualmente essenciais).",
+    detalhes: {
+      "Macronutrientes primários": "Nitrogênio (N), Fósforo (P), Potássio (K).",
+      "Macronutrientes secundários": "Cálcio (Ca), Magnésio (Mg), Enxofre (S).",
+      "Micronutrientes": "B, Cu, Fe, Mn, Mo, Zn, Cl, Ni, Co.",
+      "Exportação soja (60 sc/ha)": "N: 246 kg; P₂O₅: 96 kg; K₂O: 120 kg.",
+    },
+    lista: ["Boro é o micronutriente mais limitante no Cerrado — aplicar 1–2 kg/ha de B no solo", "Zinco deficiente em solos arenosos e de alta produtividade de milho", "Lei do Mínimo de Liebig: produção limitada pelo nutriente em menor suprimento relativo"],
+    tags: ["NPK","nutrição","fertilizante","micronutriente","boro","zinco"],
+    palavras: ["nutriente","NPK","nitrogênio","fósforo","potássio","boro","zinco","manganes","micronutriente","macronutriente","fertilizante"]
+  },
+  {
+    id: 16,
+    categoria: "Irrigação",
+    titulo: "Irrigação por Gotejamento",
+    resumo: "Sistema de alta eficiência que aplica água diretamente na zona radicular das plantas.",
+    descricao: "O gotejamento é o sistema de irrigação mais eficiente disponível, com aproveitamento de 90–95% da água aplicada. É amplamente usado em horticultura, fruticultura e cana-de-açúcar.",
+    detalhes: {
+      "Eficiência": "90–95% (vs. 60–70% do pivô central).",
+      "Pressão operacional": "0,5–2,0 kgf/cm².",
+      "Espaçamento de gotejadores": "0,2–0,5 m para hortaliças; 0,5–1,0 m para fruticultura.",
+      "Fertirrigação": "Permite aplicação de fertilizantes solúveis com alta precisão.",
+    },
+    lista: ["Filtração adequada (tela + disco) é crítica para evitar entupimento de gotejadores", "Fertirrigação com gotejo permite parcelamento de N em 8–12 aplicações durante o ciclo", "Gotejo subsuperficial elimina evaporação superficial — eficiência chega a 98%"],
+    tags: ["irrigação","gotejamento","fertirrigação","eficiência hídrica","horticultura"],
+    palavras: ["gotejo","gotejamento","irrigação","fertirrigação","água","eficiência","filtro","gotejador"]
+  },
+  {
+    id: 17,
+    categoria: "Irrigação",
+    titulo: "Pivô Central",
+    resumo: "Sistema de irrigação por aspersão de grande escala, dominante no Cerrado brasileiro.",
+    descricao: "O pivô central é o principal sistema de irrigação das grandes lavouras do Cerrado. Um conjunto rotativo de tubulações e aspersores irriga áreas circulares de 40 a 100 hectares de forma automatizada.",
+    detalhes: {
+      "Área típica": "40–110 ha por equipamento.",
+      "Eficiência": "75–85%.",
+      "Lâmina por turno": "4–12 mm/dia dependendo da ETc da cultura.",
+      "Custo de implantação": "R$ 1.500–2.500/ha (2024).",
+    },
+    lista: ["Manejo por estação climatológica + coeficiente de cultura (Kc) é o método mais preciso", "Pivô GPS permite variação da lâmina por zona de manejo (irrigação de precisão)", "Horário noturno reduz perdas por evaporação em 20–30%"],
+    tags: ["cerrado","aspersão","pivô","irrigação","grande escala"],
+    palavras: ["pivô","pivô central","aspersão","irrigação","cerrado","lâmina","kc","coeficiente"]
+  },
+  {
+    id: 18,
+    categoria: "Agropecuária",
+    titulo: "Bovinocultura de Corte — Raças e Manejo",
+    resumo: "Produção de bovinos para carne com foco em raças zebuínas e cruzamentos industriais.",
+    descricao: "O Brasil possui o maior rebanho comercial bovino do mundo (~220 milhões de cabeças). A produção de corte é dominada por zebuínos (Nelore) e cruzamentos com raças europeias em confinamento ou semi-confinamento.",
+    detalhes: {
+      "Raças principais": "Nelore (80% do rebanho), Angus, Simental, Brahman, compostos.",
+      "Indicadores produtivos": "Ganho médio diário (GMD) alvo: 1,0–1,5 kg/dia no confinamento.",
+      "Eficiência alimentar": "Conversão alimentar: 6–7 kg MS/kg de ganho.",
+      "Abate ideal": "Nelore: 450–500 kg de PV; cruzados: 470–540 kg.",
+    },
+    lista: ["Nelore x Angus (F1) combina rusticidade zebuína com precocidade europeia", "Rastreamento obrigatório para exportação à UE — manter SISBOV em dia", "Ciclo de terminação em confinamento: 90–120 dias com dieta de alta energia"],
+    tags: ["nelore","corte","confinamento","zebuíno","carne"],
+    palavras: ["bovino","boi","vaca","nelore","angus","corte","confinamento","raça","GMD","zebuíno"]
+  },
+  {
+    id: 19,
+    categoria: "Agropecuária",
+    titulo: "Apicultura e Meliponicultura",
+    resumo: "Criação de abelhas para produção de mel, pólen, própolis e serviços de polinização.",
+    descricao: "A apicultura (abelhas Apis mellifera) e meliponicultura (abelhas sem ferrão nativas) são atividades que geram renda direta via produtos e renda indireta via polinização de culturas agrícolas.",
+    detalhes: {
+      "Espécie principal": "Apis mellifera africanizada (apicultura); Melipona e Trigona (meliponicultura).",
+      "Produção média de mel": "25–40 kg/colmeia/ano (apicultura moderna).",
+      "Valor econômico da polinização": "R$ 43 bilhões/ano estimado para o agronegócio brasileiro.",
+      "Certificação orgânica": "Apiário deve estar a >3 km de culturas tratadas com agrotóxicos.",
+    },
+    lista: ["Varroose (Varroa destructor) é a principal praga da Apis — monitorar infestação mensalmente", "Colmeia Langstroth é a mais utilizada no Brasil — facilita manejo e extração", "Meliponários produzem mel diferenciado de alto valor (tiúba, jandaíra, uruçu)"],
+    tags: ["mel","polinização","abelhas","própolis","meliponicultura"],
+    palavras: ["abelha","mel","apicultura","meliponicultura","colmeia","pólen","própolis","varroa","polinização"]
+  },
+  {
+    id: 20,
+    categoria: "Agroecologia",
+    titulo: "Agricultura Orgânica e Certificação",
+    resumo: "Sistema produtivo que exclui insumos sintéticos e valoriza processos ecológicos.",
+    descricao: "A agricultura orgânica é regulada no Brasil pela Lei 10.831/2003 e pelo Decreto 6.323/2007. O produtor pode certificar via certificadora credenciada (OAC), Sistema Participativo de Garantia (SPG) ou Organização de Controle Social (OCS) para venda direta.",
+    detalhes: {
+      "Conversão": "36 meses de manejo orgânico para certificação plena.",
+      "Mercado": "R$ 6 bilhões em 2023 — crescimento de 15% a.a.",
+      "Proibido": "Fertilizantes sintéticos, agrotóxicos, sementes transgênicas, irradiação.",
+      "Permitido": "Compostos orgânicos, caldas (bordalesa, sulfocálcica), bioinsumos naturais.",
+    },
+    lista: ["MAPA registra bioinsumos: Beauveria bassiana, Trichoderma, Bacillus thuringiensis são permitidos", "Compostagem aeróbia de resíduos: relação C/N ideal 25:1 a 30:1", "Feiras e mercados locais são o principal canal de venda do orgânico familiar"],
+    tags: ["orgânico","certificação","agroecologia","bioinsumos","sustentabilidade"],
+    palavras: ["orgânico","agroecologia","certificação","bioinsumo","compostagem","natural","sustentável","Trichoderma","beauveria"]
+  }
+];
 
-        const searchInput = document.getElementById('searchInput');
-        const resultsContainer = document.getElementById('resultsContainer');
-        const searchContainer = document.getElementById('searchContainer');
+// ════════════════════════════════════════════
+//  ESTADO
+// ════════════════════════════════════════════
+let lastQuery = '';
+let lastResults = [];
+let activeAutocomplete = -1;
+let acItems = [];
 
-        // Função que realiza a busca em tempo real
-        searchInput.addEventListener('input', (e) => {
-            const termoBusca = e.target.value.toLowerCase().trim();
-            
-            // Limpa os resultados se o campo estiver vazio
-            if (termoBusca === "") {
-                resultsContainer.innerHTML = "";
-                searchContainer.classList.remove('searched');
-                return;
-            }
+// ════════════════════════════════════════════
+//  INICIALIZAÇÃO
+// ════════════════════════════════════════════
+function init() {
+  // preenche tags rápidas com categorias
+  const cats = [...new Set(DB.map(d => d.categoria))];
+  const tagContainer = document.getElementById('tags');
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'tag';
+    btn.textContent = cat;
+    btn.onclick = () => doSearch(cat);
+    tagContainer.appendChild(btn);
+  });
 
-            // Move o buscador para o topo (estilo Google) ao começar a digitar
-            searchContainer.classList.add('searched');
+  // sugestões populares
+  const popular = ['Soja','Milho','Irrigação','Plantio Direto','Orgânico','Ferrugem'];
+  popular.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'tag';
+    btn.textContent = p;
+    btn.onclick = () => doSearch(p);
+    tagContainer.appendChild(btn);
+  });
+}
 
-            // Filtra os dados com base no título, conteúdo ou palavras-chave
-            const resultadosFiltrados = bancoDadosAgro.filter(item => {
-                return item.titulo.toLowerCase().includes(termoBusca) || 
-                       item.conteudo.toLowerCase().includes(termoBusca) ||
-                       item.palavrasChave.some(pc => pc.includes(termoBusca));
-            });
+// ════════════════════════════════════════════
+//  BUSCA PRINCIPAL
+// ════════════════════════════════════════════
+function doSearch(query) {
+  query = (query || '').trim();
+  if (!query) return;
 
-            // Renderiza os resultados na tela
-            exibirResultados(resultadosFiltrados);
-        });
+  lastQuery = query;
+  hideAutocomplete();
 
-        function exibirResultados(resultados) {
-            resultsContainer.innerHTML = "";
+  const q = normalize(query);
+  const results = DB.filter(item => matches(item, q));
+  lastResults = results;
 
-            if (resultados.length === 0) {
-                resultsContainer.innerHTML = `<div class="no-results">Nenhum resultado encontrado para a sua busca.</div>`;
-                return;
-            }
+  showResultsPage(query, results);
+}
 
-            resultados.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <h3>${item.titulo}</h3>
-                    <div class="category">${item.categoria}</div>
-                    <p>${item.conteudo}</p>
-                `;
-                resultsContainer.appendChild(card);
-            });
-        }
-    </script>
+function matches(item, q) {
+  const words = q.split(/\s+/);
+  const haystack = [
+    item.titulo, item.categoria, item.resumo, item.descricao,
+    ...item.tags, ...item.palavras,
+    ...Object.values(item.detalhes),
+    ...(item.lista || [])
+  ].join(' ').toLowerCase();
+
+  return words.every(w => haystack.includes(w));
+}
+
+function normalize(str) {
+  return str.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, '');
+}
+
+// ════════════════════════════════════════════
+//  AUTOCOMPLETE
+// ════════════════════════════════════════════
+function onInput(val, source) {
+  if (!val.trim()) { hideAutocomplete(); return; }
+  const q = normalize(val);
+  const suggestions = DB.filter(item => matches(item, q)).slice(0, 5);
+  acItems = suggestions;
+  activeAutocomplete = -1;
+
+  const box = document.getElementById('autocomplete');
+  if (!suggestions.length) { hideAutocomplete(); return; }
+
+  box.innerHTML = '';
+  suggestions.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'auto-item';
+    div.setAttribute('role', 'option');
+    div.innerHTML = `<span class="auto-icon">${catIcon(item.categoria)}</span>${item.titulo}`;
+    div.onclick = () => {
+      hideAutocomplete();
+      openDetail(item.id);
+    };
+    box.appendChild(div);
+  });
+
+  box.style.display = 'block';
+}
+
+function onKey(e, source) {
+  const box = document.getElementById('autocomplete');
+  const items = box.querySelectorAll('.auto-item');
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    activeAutocomplete = Math.min(activeAutocomplete + 1, items.length - 1);
+    items.forEach((el, i) => el.classList.toggle('active', i === activeAutocomplete));
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    activeAutocomplete = Math.max(activeAutocomplete - 1, -1);
+    items.forEach((el, i) => el.classList.toggle('active', i === activeAutocomplete));
+  } else if (e.key === 'Enter') {
+    if (activeAutocomplete >= 0 && acItems[activeAutocomplete]) {
+      hideAutocomplete();
+      openDetail(acItems[activeAutocomplete].id);
+    } else {
+      const inputId = source === 'main' ? 'main-input' : 'results-input';
+      doSearch(document.getElementById(inputId).value);
+    }
+  } else if (e.key === 'Escape') {
+    hideAutocomplete();
+  }
+}
+
+function hideAutocomplete() {
+  document.getElementById('autocomplete').style.display = 'none';
+  activeAutocomplete = -1;
+}
+
+function catIcon(cat) {
+  const map = { 'Cultura': '🌾', 'Praga': '🐛', 'Técnica': '⚙️', 'Solo e Nutrição': '🪨', 'Irrigação': '💧', 'Agropecuária': '🐄', 'Agroecologia': '🌿' };
+  return map[cat] || '📋';
+}
+
+// ════════════════════════════════════════════
+//  RENDERIZAR RESULTADOS
+// ════════════════════════════════════════════
+function showResultsPage(query, results) {
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('detail-page').style.display = 'none';
+  document.getElementById('results-page').style.display = 'block';
+  document.getElementById('results-input').value = query;
+
+  const meta = document.getElementById('results-meta');
+  meta.innerHTML = results.length
+    ? `${results.length} resultado${results.length > 1 ? 's' : ''} para <strong>"${escHtml(query)}"</strong>`
+    : '';
+
+  const list = document.getElementById('results-list');
+  list.innerHTML = '';
+
+  if (!results.length) {
+    list.innerHTML = `
+      <div class="no-result">
+        <div class="emoji">🌱</div>
+        <h3>Nenhum resultado encontrado</h3>
+        <p>Tente termos como: soja, irrigação, ferrugem, plantio direto, calagem...</p>
+      </div>`;
+    return;
+  }
+
+  results.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.style.animationDelay = `${idx * 0.05}s`;
+    card.innerHTML = `
+      <span class="card-category">${catIcon(item.categoria)} ${item.categoria}</span>
+      <div class="card-title">${escHtml(item.titulo)}</div>
+      <div class="card-body"><p>${escHtml(item.resumo)}</p></div>
+      <div class="card-tags">${item.tags.map(t => `<span class="card-tag">${escHtml(t)}</span>`).join('')}</div>
+    `;
+    card.onclick = () => openDetail(item.id);
+    list.appendChild(card);
+  });
+
+  window.scrollTo(0, 0);
+}
+
+// ════════════════════════════════════════════
+//  DETALHE
+// ════════════════════════════════════════════
+function openDetail(id) {
+  const item = DB.find(d => d.id === id);
+  if (!item) return;
+
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('results-page').style.display = 'none';
+  document.getElementById('detail-page').style.display = 'block';
+  document.getElementById('detail-input').value = lastQuery;
+
+  const detailesHtml = Object.entries(item.detalhes).map(([k, v]) =>
+    `<li><strong>${escHtml(k)}:</strong> ${escHtml(v)}</li>`
+  ).join('');
+
+  const listaHtml = item.lista.map(l => `<li>${escHtml(l)}</li>`).join('');
+
+  document.getElementById('detail-content').innerHTML = `
+    <div class="detail-card">
+      <span class="detail-category">${catIcon(item.categoria)} ${escHtml(item.categoria)}</span>
+      <h1 class="detail-title">${escHtml(item.titulo)}</h1>
+      <div class="detail-section">
+        <h4>Visão Geral</h4>
+        <p>${escHtml(item.descricao)}</p>
+      </div>
+      <div class="detail-section">
+        <h4>Informações Técnicas</h4>
+        <ul>${detailesHtml}</ul>
+      </div>
+      <div class="detail-section">
+        <h4>Boas Práticas e Recomendações</h4>
+        <ul>${listaHtml}</ul>
+      </div>
+      <div class="detail-tags">
+        ${item.tags.map(t => `<span class="detail-tag">${escHtml(t)}</span>`).join('')}
+      </div>
+    </div>
+  `;
+
+  window.scrollTo(0, 0);
+}
+
+function goBack() {
+  document.getElementById('detail-page').style.display = 'none';
+  if (lastResults.length > 0) {
+    showResultsPage(lastQuery, lastResults);
+  } else {
+    goHome();
+  }
+}
+
+function goHome() {
+  document.getElementById('results-page').style.display = 'none';
+  document.getElementById('detail-page').style.display = 'none';
+  document.getElementById('home').style.display = 'flex';
+  document.getElementById('main-input').value = '';
+  hideAutocomplete();
+  window.scrollTo(0, 0);
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Fechar autocomplete ao clicar fora
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap') && !e.target.closest('.search-wrap-sm')) {
+    hideAutocomplete();
+  }
+});
+
+init();
+</script>
 </body>
 </html>
