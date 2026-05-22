@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroBusca - Enciclopédia Agrícola</title>
+    <style>
+        /* Estilização CSS - Estilo Google Clean */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .search-container {
+            text-align: center;
+            margin-top: 15vh;
+            width: 100%;
+            max-width: 600px;
+            transition: margin-top 0.3s ease;
+        }
+
+        .search-container.searched {
+            margin-top: 2vh;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: #2e7d32; /* Verde Agrícola */
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        h1 span {
+            color: #fbc02d; /* Amarelo Sol/Colheita */
+        }
+
+        .search-box-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            outline: none;
+            box-shadow: none;
+            transition: box-shadow 0.2s;
+        }
+
+        .search-box:hover, .search-box:focus {
+            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+            border-color: transparent;
+        }
+
+        .results-container {
+            width: 100%;
+            max-width: 650px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            text-align: left;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .card h3 {
+            color: #1a0dab;
+            font-size: 19px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .card h3:hover {
+            text-decoration: underline;
+        }
+
+        .card .category {
+            color: #006621;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            color: #4d5156;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .no-results {
+            color: #70757a;
+            margin-top: 20px;
+            font-size: 15px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Estrutura HTML -->
+    <div class="search-container" id="searchContainer">
+        <h1>Agro<span>Busca</span></h1>
+        <div class="search-box-wrapper">
+            <input type="text" id="searchInput" class="search-box" placeholder="Pesquise sobre culturas, pragas, solo ou manejo..." autocomplete="off">
+        </div>
+    </div>
+
+    <div class="results-container" id="resultsContainer"></div>
+
+    <!-- Lógica de Banco de Dados e Busca (JavaScript) -->
+    <script>
+        // Banco de Dados embutido no código (Sinta-se livre para expandir esta lista)
+        const bancoDadosAgro = [
+            {
+                titulo: "Cultivo do Milho (Zea mays)",
+                categoria: "Culturas / Grãos",
+                conteudo: "O milho necessita de solo bem drenado e rico em matéria orgânica. O espaçamento ideal varia de 45 a 90 cm entre linhas. Exige alta demanda de nitrogênio e água durante o florescimento.",
+                palavrasChave: ["milho", "graos", "plantio", "adubacao", "irrigacao"]
+            },
+            {
+                titulo: "Manejo de Pragas: Lagarta-do-cartucho",
+                categoria: "Proteção de Cultivos / Pragas",
+                conteudo: "A Spodoptera frugiperda ataca principalmente o milho. O controle pode ser feito via manejo integrado (MIP), uso de plantas Bt, ou aplicação de controle biológico com a vespinha Trichogramma.",
+                palavrasChave: ["lagarta", "cartucho", "praga", "inseto", "milho", "defensivo"]
+            },
+            {
+                titulo: "Correção de Solo: Calagem",
+                categoria: "Solo / Nutrição",
+                conteudo: "A calagem consiste na aplicação de calcário para elevar o pH do solo e diminuir a toxicidade do alumínio. Melhora a eficiência dos fertilizantes e fornece Cálcio e Magnésio.",
+                palavrasChave: ["calcario", "calagem", "ph", "solo", "acidez", "terra"]
+            },
+            {
+                titulo: "Cultivo da Soja (Glycine max)",
+                categoria: "Culturas / Oleaginosas",
+                conteudo: "A soja se desenvolve melhor em temperaturas entre 20°C e 30°C. É fundamental realizar a inoculação das sementes com bactérias Bradyrhizobium para fixação biológica de nitrogênio.",
+                palavrasChave: ["soja", "inoculacao", "bacteria", "graos", "plantio"]
+            },
+            {
+                titulo: "Irrigação por Gotejamento",
+                categoria: "Tecnologia / Engenharia",
+                conteudo: "Sistema de alta eficiência hidráulica que aplica água diretamente na zona radicular das plantas. Reduz o desperdício de água e o aparecimento de plantas daninhas nas entrelinhas.",
+                palavrasChave: ["irrigacao", "agua", "gotejamento", "tecnologia", "economia"]
+            }
+        ];
+
+        const searchInput = document.getElementById('searchInput');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const searchContainer = document.getElementById('searchContainer');
+
+        // Função que realiza a busca em tempo real
+        searchInput.addEventListener('input', (e) => {
+            const termoBusca = e.target.value.toLowerCase().trim();
+            
+            // Limpa os resultados se o campo estiver vazio
+            if (termoBusca === "") {
+                resultsContainer.innerHTML = "";
+                searchContainer.classList.remove('searched');
+                return;
+            }
+
+            // Move o buscador para o topo (estilo Google) ao começar a digitar
+            searchContainer.classList.add('searched');
+
+            // Filtra os dados com base no título, conteúdo ou palavras-chave
+            const resultadosFiltrados = bancoDadosAgro.filter(item => {
+                return item.titulo.toLowerCase().includes(termoBusca) || 
+                       item.conteudo.toLowerCase().includes(termoBusca) ||
+                       item.palavrasChave.some(pc => pc.includes(termoBusca));
+            });
+
+            // Renderiza os resultados na tela
+            exibirResultados(resultadosFiltrados);
+        });
+
+        function exibirResultados(resultados) {
+            resultsContainer.innerHTML = "";
+
+            if (resultados.length === 0) {
+                resultsContainer.innerHTML = `<div class="no-results">Nenhum resultado encontrado para a sua busca.</div>`;
+                return;
+            }
+
+            resultados.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <h3>${item.titulo}</h3>
+                    <div class="category">${item.categoria}</div>
+                    <p>${item.conteudo}</p>
+                `;
+                resultsContainer.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
